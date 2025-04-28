@@ -1,0 +1,1 @@
+export const VITE_BASE_URL = "http://localhost:8000" //Backend URL set in .env file

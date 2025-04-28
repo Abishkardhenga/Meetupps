@@ -9,7 +9,7 @@ interface AuthRequest extends Request {
 
 const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
   let token: string | undefined;
-
+console.log("header", req.headers)
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];

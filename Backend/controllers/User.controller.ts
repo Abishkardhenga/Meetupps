@@ -41,6 +41,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 // Update the login function return type to match
 export const login = async (req: Request, res: Response): Promise<any> => {
     const { email, password } = req.body;
+    console.log("into the backend login")
 
     if (!validateEmail(email)) {
         return res.status(400).json({ message: 'Invalid email format' });
@@ -48,6 +49,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
     try {
         const user = await User.findOne({ email });
+        console.log("user", user)
         if (!user) {
              res.status(400).json({ message: 'User not found' });
             return;
@@ -61,7 +63,15 @@ export const login = async (req: Request, res: Response): Promise<any> => {
 
         const token = generateToken(user._id);
 
-         res.status(200).json({
+        res.cookie("user_info", token, {
+           httpOnly: true,
+  secure: false, // true if using HTTPS
+  path: '/',
+            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+  sameSite:"none"
+            
+            // Set to true in production
+         }).status(200).json({
             message: 'Login successful',
             token,
             user: {

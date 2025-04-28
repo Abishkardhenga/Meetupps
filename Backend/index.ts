@@ -10,10 +10,18 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json()); // Parse JSON bodies
 
 connectDB();
+
+//write a cors policy for http://localhost:8080/login
+
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://localhost:5173', "*"], // List your frontend origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  optionsSuccessStatus: 200
+}))
 
 // Test route directly on app
 app.get("/test", (req, res) => {

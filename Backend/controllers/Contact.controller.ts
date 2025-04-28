@@ -7,9 +7,10 @@ import { Request, Response } from 'express';
 export const createContact = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const { name, email, phone } = req.body;
+        console.log("request in create contact", req.user)
         const userId = req.user._id; // assuming you attach user to req after auth
 
-        const newContact = new Contact({ name, email, phone, user: userId });
+        const newContact = new Contact({ name, email, phone, userId: userId });
         await newContact.save();
 
         res.status(201).json({ message: 'Contact created successfully', contact: newContact });
@@ -22,7 +23,7 @@ export const createContact = async (req: AuthRequest, res: Response): Promise<an
 export const getContacts = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
         const userId = req.user._id; // user ID from auth middleware
-        const contacts = await Contact.find({ user: userId });
+        const contacts = await Contact.find({ userId: userId });
 
         res.status(200).json({ contacts });
     } catch (error) {
@@ -33,8 +34,8 @@ export const getContacts = async (req: AuthRequest, res: Response): Promise<any>
 // View a specific contact by ID
 export const getContactById = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
-        const { contactId } = req.params;
-        const contact = await Contact.findById(contactId);
+        const { _id } = req.params;
+        const contact = await Contact.findById(_id);
 
         if (!contact) {
             return res.status(404).json({ message: 'Contact not found' });
@@ -49,10 +50,10 @@ export const getContactById = async (req: AuthRequest, res: Response): Promise<a
 // Update a specific contact
 export const updateContact = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const { contactId } = req.params;
+        const { _id } = req.params;
         const updatedData = req.body;
 
-        const updatedContact = await Contact.findByIdAndUpdate(contactId, updatedData, { new: true });
+        const updatedContact = await Contact.findByIdAndUpdate(_id, updatedData, { new: true });
 
         if (!updatedContact) {
             res.status(404).json({ message: 'Contact not found' });
@@ -68,9 +69,9 @@ export const updateContact = async (req: AuthRequest, res: Response): Promise<vo
 // Delete a specific contact
 export const deleteContact = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const { contactId } = req.params;
+        const { _id } = req.params;
 
-        const deletedContact = await Contact.findByIdAndDelete(contactId);
+        const deletedContact = await Contact.findByIdAndDelete(_id);
 
         if (!deletedContact) {
             res.status(404).json({ message: 'Contact not found' });

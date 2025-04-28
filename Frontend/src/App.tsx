@@ -13,30 +13,39 @@ import ContactForm from "./pages/ContactForm";
 import Reminders from "./pages/Reminders";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { CookiesProvider } from "react-cookie"
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/contacts/add" element={<ContactForm isEdit={false} />} />
-          <Route path="/contacts/edit/:id" element={<ContactForm isEdit={true} />} />
-          <Route path="/reminders" element={<Reminders />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  <CookiesProvider defaultSetOptions={{ path: "/" }}>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/contacts" element={<Contacts />} />
+            <Route
+              path="/contacts/add"
+              element={<ContactForm isEdit={false} />}
+            />
+            <Route
+              path="/contacts/edit/:id"
+              element={<ContactForm isEdit={true} />}
+            />
+            <Route path="/reminders" element={<Reminders />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </CookiesProvider>
+)
 
 export default App;
