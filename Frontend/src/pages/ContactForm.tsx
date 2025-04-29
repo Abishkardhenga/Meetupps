@@ -87,9 +87,10 @@ const ContactForm = ({ isEdit = false }) => {
         email: formData.email,
         phone: formData.phone,
         birthday: formData.birthday || undefined,
-        notes: formData.notes,
+        notes: formData.notes, // This looks correct
         tags: tags,
       }
+      console.log("Form data before submission:", formData) // Check if notes exists here
 
       const response = await apiPost(apiRoutes.contacts.create, contactData, {
         headers: {

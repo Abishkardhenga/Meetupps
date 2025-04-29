@@ -6,14 +6,14 @@ import { Request, Response } from 'express';
 
 export const createContact = async (req: AuthRequest, res: Response): Promise<any> => {
     try {
-        const { name, email, phone } = req.body;
+        const { name, email, phone ,notes,birthday,tags,address} = req.body;
         console.log("request in create contact", req.user)
         const userId = req.user._id; // assuming you attach user to req after auth
 
-        const newContact = new Contact({ name, email, phone, userId: userId });
+        const newContact = new Contact({ name, email, phone, userId: userId,notes ,tags, birthday,address });
         await newContact.save();
 
-        res.status(201).json({ message: 'Contact created successfully', contact: newContact });
+        res.status(201).json({ message: 'Contact created successfully', contact: newContact,birthday });
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error });
     }

@@ -13,6 +13,7 @@ console.log("header", req.headers)
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
       token = req.headers.authorization.split(' ')[1];
+      console.log("token",token)
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
 
       // Find user by decoded ID and attach to request
