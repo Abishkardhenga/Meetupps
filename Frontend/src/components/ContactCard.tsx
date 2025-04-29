@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import axios from "axios"
 import { apiRoutes } from "@/constants/apiRoutes"
-import { apiDelete } from "@/services/http.client"
+import { apiDelete, apiPut } from "@/services/http.client"
 import { toast } from "sonner"
+import { Link } from "react-router-dom"
 
 export interface ContactProps {
-  _id: string
+  _id?: string
   userId: string
   name: string
   email: string
@@ -140,7 +141,9 @@ const ContactCard = ({ contact }: { contact: ContactProps }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                <Link to={`/contacts/edit/${contact._id}`}>
+                  <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>Send Email</DropdownMenuItem>
                 <DropdownMenuItem>Add Reminder</DropdownMenuItem>
                 <DropdownMenuItem

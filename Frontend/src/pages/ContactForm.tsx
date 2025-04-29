@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import AppNavbar from "@/components/AppNavbar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
-import { apiPost } from "@/services/http.client"
+import { apiGet, apiPost, apiPut } from "@/services/http.client"
 import { apiRoutes } from "@/constants/apiRoutes"
 import { toast } from "sonner"
 import { useCookies } from "react-cookie"
@@ -17,6 +17,8 @@ const ContactForm = ({ isEdit = false }) => {
   const navigate = useNavigate()
 
   const [cookies, setCookie, removeCookie] = useCookies(["user_info"])
+  const { id } = useParams()
+  console.log("userparams", id)
 
   useEffect(() => {
     console.log("cookies", cookies.user_info)
@@ -24,13 +26,11 @@ const ContactForm = ({ isEdit = false }) => {
   }, [])
 
   const [formData, setFormData] = useState({
-    name: isEdit ? "Sarah Miller" : "",
-    email: isEdit ? "sarah.miller@example.com" : "",
-    phone: isEdit ? "(555) 867-5309" : "",
-    birthday: isEdit ? "1990-05-15" : "",
-    notes: isEdit
-      ? "Met at TechCrunch Disrupt. Interested in AI startups and might be a potential investor for our next round."
-      : "",
+    name: "",
+    email: "",
+    phone: "",
+    birthday: "",
+    notes: "",
   })
 
   // Tags management
@@ -44,6 +44,45 @@ const ContactForm = ({ isEdit = false }) => {
     if (newTag.trim() && !tags.includes(newTag.trim())) {
       setTags([...tags, newTag.trim()])
       setNewTag("")
+    }
+  }
+
+  useEffect(() => {
+    if (isEdit && id) {
+      getIndividualContact(id)
+    }
+  }, [isEdit, id])
+
+  const getIndividualContact = async (id: string) => {
+    console.log("Fetching contact with ID:", id)
+
+    try {
+      const token = localStorage.getItem("token")
+      const { contact } = await apiGet(apiRoutes.contacts.view(id), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      console.log("Contact data received:", contact)
+
+      if (contact) {
+        setFormData({
+          name: contact.name || "",
+          email: contact.email || "",
+          phone: contact.phone || "",
+          birthday: contact.birthday || "",
+          notes: contact.notes || "",
+        })
+
+        if (contact.tags && Array.isArray(contact.tags)) {
+          setTags(contact.tags)
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching contact:", error)
+      toast.error("Failed to load contact data")
     }
   }
 
@@ -73,8 +112,12 @@ const ContactForm = ({ isEdit = false }) => {
       return
     }
 
-    // Create the contact
-    createContact()
+    // Create or update the contact based on isEdit flag
+    if (isEdit) {
+      updateContact()
+    } else {
+      createContact()
+    }
   }
   const createContact = async () => {
     try {
@@ -114,6 +157,56 @@ const ContactForm = ({ isEdit = false }) => {
     } catch (error) {
       console.error("Error creating contact:", error)
       toast.error("Failed to create contact", {
+        description: "Please try again or check your connection",
+        duration: 4000,
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const updateContact = async () => {
+    try {
+      setIsSubmitting(true)
+      const token = localStorage.getItem("token")
+
+      const contactData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        birthday: formData.birthday || undefined,
+        notes: formData.notes,
+        tags: tags,
+      }
+
+      console.log("Updating contact with data:", contactData)
+
+      const response = await apiPut(
+        apiRoutes.contacts.update(id as string),
+        contactData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      )
+
+      if (response) {
+        toast.success("Contact updated", {
+          description: `${formData.name}'s information has been updated`,
+          duration: 3000,
+        })
+
+        // Redirect to contacts list after short delay
+        setTimeout(() => {
+          navigate("/contacts")
+        }, 1000)
+      }
+    } catch (error) {
+      console.error("Error updating contact:", error)
+      toast.error("Failed to update contact", {
         description: "Please try again or check your connection",
         duration: 4000,
       })
