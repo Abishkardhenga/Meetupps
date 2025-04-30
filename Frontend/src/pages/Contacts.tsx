@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Filter, Plus, X } from "lucide-react"
-import { apiGet } from "@/services/http.client"
+import { apiGet, apiPost } from "@/services/http.client"
 import { apiRoutes } from "@/constants/apiRoutes"
 
 const Contacts = () => {

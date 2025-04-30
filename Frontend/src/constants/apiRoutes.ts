@@ -20,7 +20,8 @@ export const apiRoutes = {
   reminders: {
     create: `/api/${API_VERSION}/reminders/create`,
     list: `/api/${API_VERSION}/reminders/list`,
-    checkBirthdays: `/api/${API_VERSION}/reminders/check-birthdays`,
+    checkBirthdays: `/api/${API_VERSION}/reminders/check-events`,
+    update: (reminderId: string) => `/api/${API_VERSION}/reminders/update/${reminderId}`,
     delete: (reminderId: string) => `/api/${API_VERSION}/reminders/delete/${reminderId}`,
   },
 
